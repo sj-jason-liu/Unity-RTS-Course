@@ -4051,10 +4051,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cinemachineCamera: {fileID: 404981484}
   _cameraTarget: {fileID: 2121413853}
-  _keyboardPanSpeed: 10
-  _zoomSpeed: 0.2
-  _rotateSpeed: 0.2
-  minZoomDistance: 9
+  _cameraConfig:
+    <EnableEdgePan>k__BackingField: 1
+    <MousePanSpeed>k__BackingField: 5
+    <EdgePanSize>k__BackingField: 50
+    <KeyboardPanSpeed>k__BackingField: 5
+    <ZoomSpeed>k__BackingField: 1
+    <MinZoomDistance>k__BackingField: 7.5
+    <RotateSpeed>k__BackingField: 1
 --- !u!1001 &332197402
 PrefabInstance:
   m_ObjectHideFlags: 0
