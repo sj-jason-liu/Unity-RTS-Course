@@ -7,7 +7,7 @@ namespace sjjasonliu.RTS.Player
     public class PlayerInput : MonoBehaviour
     {
         [SerializeField] private CinemachineCamera _cinemachineCamera;
-        [SerializeField] private Transform _cameraTarget;
+        [SerializeField] private Rigidbody _cameraTarget;
         [SerializeField] private CameraConfig _cameraConfig;
 
         private CinemachineFollow cinemachineFollow;
@@ -134,8 +134,8 @@ namespace sjjasonliu.RTS.Player
             Vector2 moveAmount = GetKeyboardMoveAmount();
             moveAmount += GetMouseMoveAmount();
 
-            moveAmount *= Time.deltaTime;
-            _cameraTarget.position += new Vector3(moveAmount.x, 0, moveAmount.y);
+            //set the camera target's velocity based on the move amount
+            _cameraTarget.linearVelocity = new Vector3(moveAmount.x, 0, moveAmount.y);
         }
 
         private Vector2 GetMouseMoveAmount()
