@@ -11,6 +11,7 @@ namespace sjjasonliu.RTS.Player
         [SerializeField] private Camera _camera;
         [SerializeField] private Rigidbody _cameraTarget;
         [SerializeField] private CameraConfig _cameraConfig;
+        [SerializeField] private LayerMask _selectableUnitsLayer;
 
         private CinemachineFollow _cinemachineFollow;
         private float _zoomStartTime;
@@ -53,7 +54,7 @@ namespace sjjasonliu.RTS.Player
                 }
 
                 // Perform a raycast to check if the click hit a selectable unit, if it does, select it
-                if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default")) //check if the raycast hits an object
+                if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, _selectableUnitsLayer) //check if the raycast hits an object
                     && hit.collider.TryGetComponent(out ISelectable selectable))
                 {
                     selectable.Select();
