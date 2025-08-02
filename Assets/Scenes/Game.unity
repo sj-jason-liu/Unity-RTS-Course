@@ -4153,6 +4153,9 @@ MonoBehaviour:
   _selectableUnitsLayer:
     serializedVersion: 2
     m_Bits: 192
+  _floorLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1001 &332197402
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17302,7 +17305,7 @@ GameObject:
   - component: {fileID: 1387778862}
   - component: {fileID: 1387778861}
   - component: {fileID: 1387778860}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22055,7 +22058,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6731973859675169807, guid: 883b9682b823cb84cac42e4ad43d41d2, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -24964,7 +24967,7 @@ GameObject:
   - component: {fileID: 1933012997}
   - component: {fileID: 1933012996}
   - component: {fileID: 1933012995}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -5,11 +5,20 @@ using UnityEngine.Rendering.Universal;
 namespace sjjasonliu.RTS.Units
 {
     [RequireComponent(typeof(NavMeshAgent))] //check if NavMeshAgent component exists, if not, add it
-    public class Worker : MonoBehaviour, ISelectable
+    public class Worker : MonoBehaviour, ISelectable, IMoveable
     {
-        [SerializeField] private Transform _target;
         [SerializeField] private DecalProjector _decalProjector;
         private NavMeshAgent _agent;
+
+        private void Awake()
+        {
+            _agent = GetComponent<NavMeshAgent>();
+        }
+
+        public void MoveTo(Vector3 position)
+        {
+            _agent.SetDestination(position); //set the target position to the given position
+        }
 
         public void Deselect()
         {
@@ -21,19 +30,6 @@ namespace sjjasonliu.RTS.Units
         {
             if (_decalProjector != null)
                 _decalProjector.gameObject.SetActive(true); //show the selection decal when selected
-        }
-
-        private void Awake()
-        {
-            _agent = GetComponent<NavMeshAgent>();    
-        }
-
-        private void Update()
-        {
-            if(_target != null)
-            {
-                _agent.SetDestination(_target.position);
-            }
         }
     }
 }

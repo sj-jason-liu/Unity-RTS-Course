@@ -12,6 +12,7 @@ namespace sjjasonliu.RTS.Player
         [SerializeField] private Rigidbody _cameraTarget;
         [SerializeField] private CameraConfig _cameraConfig;
         [SerializeField] private LayerMask _selectableUnitsLayer;
+        [SerializeField] private LayerMask _floorLayer;
 
         private CinemachineFollow _cinemachineFollow;
         private float _zoomStartTime;
@@ -37,6 +38,21 @@ namespace sjjasonliu.RTS.Player
             HandleZooming();
             HandleRotation();
             HandleLeftClick();
+            HandleRightClick();
+        }
+
+        private void HandleRightClick()
+        {
+            //check if the selected unit is null or not moveable
+            if (_selectedUnit == null || _selectedUnit is not IMoveable moveable) { return; }
+
+            Ray cameraRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+            if (Mouse.current.rightButton.wasPressedThisFrame
+                && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, _floorLayer)) //check if the raycast hits the floor layer
+            {
+                moveable.MoveTo(hit.point); //move the selected unit to the hit point
+            }
         }
 
         private void HandleLeftClick()
