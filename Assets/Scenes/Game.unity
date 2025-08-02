@@ -1426,13 +1426,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6510919576379171628, guid: 883b9682b823cb84cac42e4ad43d41d2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1414344007}
-    - targetCorrespondingSourceObject: {fileID: 6510919576379171628, guid: 883b9682b823cb84cac42e4ad43d41d2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1414344006}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 883b9682b823cb84cac42e4ad43d41d2, type: 3}
 --- !u!1 &143719004
 GameObject:
@@ -4146,6 +4140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cinemachineCamera: {fileID: 404981484}
+  _camera: {fileID: 330585545}
   _cameraTarget: {fileID: 2121413854}
   _cameraConfig:
     <EnableEdgePan>k__BackingField: 1
@@ -17949,46 +17944,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4583745518494351312, guid: 5920905e7a5364c47864b79706cb5eca, type: 3}
   m_PrefabInstance: {fileID: 1410496840}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1414344005 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6510919576379171628, guid: 883b9682b823cb84cac42e4ad43d41d2, type: 3}
-  m_PrefabInstance: {fileID: 143530204}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1414344006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414344005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d348f9b3f1ed4a04faa71095e754246d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _target: {fileID: 1494702813}
---- !u!195 &1414344007
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414344005}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3
-  m_Acceleration: 50
-  avoidancePriority: 50
-  m_AngularSpeed: 1200
-  m_StoppingDistance: 1
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
 --- !u!1001 &1427200541
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18903,11 +18858,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!4 &1494702813 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4078631732461238711, guid: 883b9682b823cb84cac42e4ad43d41d2, type: 3}
-  m_PrefabInstance: {fileID: 1745800586}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1502179704
 PrefabInstance:
   m_ObjectHideFlags: 0

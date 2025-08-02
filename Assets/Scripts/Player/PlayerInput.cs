@@ -1,3 +1,4 @@
+using sjjasonliu.RTS.Units;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,24 +8,26 @@ namespace sjjasonliu.RTS.Player
     public class PlayerInput : MonoBehaviour
     {
         [SerializeField] private CinemachineCamera _cinemachineCamera;
+        [SerializeField] private Camera _camera;
         [SerializeField] private Rigidbody _cameraTarget;
         [SerializeField] private CameraConfig _cameraConfig;
 
-        private CinemachineFollow cinemachineFollow;
-        private float zoomStartTime;
-        private float rotateStartTime;
-        private Vector3 startingFollowOffset;
-        private float maxRotationAmount;
+        private CinemachineFollow _cinemachineFollow;
+        private float _zoomStartTime;
+        private float _rotateStartTime;
+        private Vector3 _startingFollowOffset;
+        private float _maxRotationAmount;
+        private ISelectable _selectedUnit;
 
         private void Awake()
         {
             //check if the component exists
-            if (!_cinemachineCamera.TryGetComponent(out cinemachineFollow))
+            if (!_cinemachineCamera.TryGetComponent(out _cinemachineFollow))
             {
                 Debug.LogError("CinemachineFollow component not found on " + _cinemachineCamera.name);
             }
-            startingFollowOffset = cinemachineFollow.FollowOffset;
-            maxRotationAmount = Mathf.Abs(startingFollowOffset.z);
+            _startingFollowOffset = _cinemachineFollow.FollowOffset;
+            _maxRotationAmount = Mathf.Abs(_startingFollowOffset.z);
         }
 
         void Update()
@@ -32,6 +35,31 @@ namespace sjjasonliu.RTS.Player
             HandlePanning();
             HandleZooming();
             HandleRotation();
+            HandleLeftClick();
+        }
+
+        private void HandleLeftClick()
+        {
+            if (_camera == null) { return; }
+
+            Ray cameraRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+            if (Mouse.current.leftButton.wasReleasedThisFrame) //check if the left mouse button was released
+            {
+                if (_selectedUnit != null) // if there is a selected unit, deselect it
+                {
+                    _selectedUnit.Deselect();
+                    _selectedUnit = null;
+                }
+
+                // Perform a raycast to check if the click hit a selectable unit, if it does, select it
+                if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, LayerMask.GetMask("Default")) //check if the raycast hits an object
+                    && hit.collider.TryGetComponent(out ISelectable selectable))
+                {
+                    selectable.Select();
+                    _selectedUnit = selectable; // set the selected unit to the newly selected one
+                }
+            }
         }
 
         private void HandleRotation()
@@ -39,41 +67,41 @@ namespace sjjasonliu.RTS.Player
             //check if the rotation keys are pressed to set the start time
             if (ShouldSetRotateStartTime())
             {
-                rotateStartTime = Time.time;
+                _rotateStartTime = Time.time;
             }
 
             //calculate the rotation time
-            float rotationTime = Mathf.Clamp01((Time.time - rotateStartTime) * _cameraConfig.RotateSpeed);
+            float rotationTime = Mathf.Clamp01((Time.time - _rotateStartTime) * _cameraConfig.RotateSpeed);
             Vector3 targetFollowOffset;  //store the target follow offset based on rotation
 
             if (Keyboard.current.pageUpKey.isPressed && !Keyboard.current.pageDownKey.isPressed) //if pressing pageUp, camera rotates right
             {
                 targetFollowOffset = new Vector3(
-                    maxRotationAmount,
-                    cinemachineFollow.FollowOffset.y,
+                    _maxRotationAmount,
+                    _cinemachineFollow.FollowOffset.y,
                     0
                 );
             }
             else if (Keyboard.current.pageDownKey.isPressed && !Keyboard.current.pageUpKey.isPressed)  //if pressing pageDown, camera rotates left
             {
                 targetFollowOffset = new Vector3(
-                    -maxRotationAmount,
-                    cinemachineFollow.FollowOffset.y,
+                    -_maxRotationAmount,
+                    _cinemachineFollow.FollowOffset.y,
                     0
                 );
             }
             else
             {
                 targetFollowOffset = new Vector3(
-                    startingFollowOffset.x,
-                    cinemachineFollow.FollowOffset.y,
-                    startingFollowOffset.z
+                    _startingFollowOffset.x,
+                    _cinemachineFollow.FollowOffset.y,
+                    _startingFollowOffset.z
                 );
             }
 
             //smoothly interpolate the follow offset towards the target offset
-            cinemachineFollow.FollowOffset = Vector3.Slerp(
-                    cinemachineFollow.FollowOffset,
+            _cinemachineFollow.FollowOffset = Vector3.Slerp(
+                    _cinemachineFollow.FollowOffset,
                     targetFollowOffset,
                     rotationTime
                 );
@@ -91,33 +119,33 @@ namespace sjjasonliu.RTS.Player
         {
             if (ShouldSetZoomeStartTime())
             {
-                zoomStartTime = Time.time;
+                _zoomStartTime = Time.time;
             }
 
             //calculate the zoom time
-            float zoomTime = Mathf.Clamp01((Time.time - zoomStartTime) * _cameraConfig.ZoomSpeed);
+            float zoomTime = Mathf.Clamp01((Time.time - _zoomStartTime) * _cameraConfig.ZoomSpeed);
             Vector3 targetFollowOffset;  //store the target follow offset based on zoom in or out
 
             if (Keyboard.current.deleteKey.isPressed) //if zooming in, target offset is set to minimum distance
             {
                 targetFollowOffset = new(
-                    cinemachineFollow.FollowOffset.x,
+                    _cinemachineFollow.FollowOffset.x,
                     _cameraConfig.MinZoomDistance,
-                    cinemachineFollow.FollowOffset.z
+                    _cinemachineFollow.FollowOffset.z
                 );
             }
             else  //if zooming out, target offset is set to the starting follow offset
             {
                 targetFollowOffset = new(
-                    cinemachineFollow.FollowOffset.x,
-                    startingFollowOffset.y,
-                    cinemachineFollow.FollowOffset.z
+                    _cinemachineFollow.FollowOffset.x,
+                    _startingFollowOffset.y,
+                    _cinemachineFollow.FollowOffset.z
                 );
             }
 
             //smoothly interpolate the follow offset towards the target offset
-            cinemachineFollow.FollowOffset = Vector3.Slerp(
-                    cinemachineFollow.FollowOffset,
+            _cinemachineFollow.FollowOffset = Vector3.Slerp(
+                    _cinemachineFollow.FollowOffset,
                     targetFollowOffset,
                     zoomTime
                 );
