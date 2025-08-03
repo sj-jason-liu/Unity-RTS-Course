@@ -38,21 +38,24 @@ namespace sjjasonliu.RTS.Player
             _maxRotationAmount = Mathf.Abs(_startingFollowOffset.z);
 
             Bus<UnitSelectedEvent>.OnEvent += HandleUnitSelected; //listener for unit selection events
+            Bus<UnitDeselectedEvent>.OnEvent += HandleUnitDeselected;
         }
 
         private void OnDestroy()
         {
             Bus<UnitSelectedEvent>.OnEvent -= HandleUnitSelected; // Unsubscribe from the event to prevent memory leaks
+            Bus<UnitDeselectedEvent>.OnEvent -= HandleUnitDeselected;
         }
 
         //When Worker is selected, it will be passed to this method by the event system
         private void HandleUnitSelected(UnitSelectedEvent evt)
         {
-            if (_selectedUnit != null) // if there is a selected unit, deselect it
-            {
-                _selectedUnit.Deselect();
-            }
             _selectedUnit = evt.Unit;
+        }
+
+        private void HandleUnitDeselected(UnitDeselectedEvent evt)
+        {
+            _selectedUnit = null; // clear the selected unit when it is deselected
         }
 
         void Update()

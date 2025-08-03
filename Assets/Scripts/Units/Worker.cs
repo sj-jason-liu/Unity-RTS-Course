@@ -26,6 +26,8 @@ namespace sjjasonliu.RTS.Units
         {
             if (_decalProjector != null)
                 _decalProjector.gameObject.SetActive(false); //hide the selection decal when deselected
+
+            Bus<UnitDeselectedEvent>.Raise(new UnitDeselectedEvent(this)); //raise the event that this unit is deselected
         }
 
         public void Select()
