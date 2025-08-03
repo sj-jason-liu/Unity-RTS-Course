@@ -1,3 +1,5 @@
+using sjjasonliu.RTS.EventBus;
+using sjjasonliu.RTS.Events;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering.Universal;
@@ -30,6 +32,8 @@ namespace sjjasonliu.RTS.Units
         {
             if (_decalProjector != null)
                 _decalProjector.gameObject.SetActive(true); //show the selection decal when selected
+
+            Bus<UnitSelectedEvent>.Raise(new UnitSelectedEvent(this)); //raise the event that this unit is selected
         }
     }
 }

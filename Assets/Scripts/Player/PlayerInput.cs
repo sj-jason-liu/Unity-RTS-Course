@@ -1,5 +1,8 @@
+using sjjasonliu.RTS.EventBus;
+using sjjasonliu.RTS.Events;
 using sjjasonliu.RTS.Units;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,6 +36,23 @@ namespace sjjasonliu.RTS.Player
             }
             _startingFollowOffset = _cinemachineFollow.FollowOffset;
             _maxRotationAmount = Mathf.Abs(_startingFollowOffset.z);
+
+            Bus<UnitSelectedEvent>.OnEvent += HandleUnitSelected; //listener for unit selection events
+        }
+
+        private void OnDestroy()
+        {
+            Bus<UnitSelectedEvent>.OnEvent -= HandleUnitSelected; // Unsubscribe from the event to prevent memory leaks
+        }
+
+        //When Worker is selected, it will be passed to this method by the event system
+        private void HandleUnitSelected(UnitSelectedEvent evt)
+        {
+            if (_selectedUnit != null) // if there is a selected unit, deselect it
+            {
+                _selectedUnit.Deselect();
+            }
+            _selectedUnit = evt.Unit;
         }
 
         void Update()
@@ -51,13 +71,12 @@ namespace sjjasonliu.RTS.Player
 
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                // enable the ui
-                _selectionBox.gameObject.SetActive(true);
-                // store start position
-                _startingMousePosition = Mouse.current.position.ReadValue();
+                ResetSelectionBox();
+                
+                _selectionBox.gameObject.SetActive(true); // enable the ui
             }
             else if (Mouse.current.leftButton.isPressed && !Mouse.current.leftButton.wasPressedThisFrame) //dragging
-            {               
+            {
                 ResizeSelectionBox();
             }
             else if (Mouse.current.leftButton.wasReleasedThisFrame)
@@ -67,6 +86,16 @@ namespace sjjasonliu.RTS.Player
                 // disable the ui
                 _selectionBox.gameObject.SetActive(false);
             }
+        }
+
+        private void ResetSelectionBox()
+        {
+            // store start position
+            _startingMousePosition = Mouse.current.position.ReadValue();
+            // reset selection box size
+            _selectionBox.sizeDelta = Vector2.zero;
+            // set the anchored position to the starting mouse position
+            _selectionBox.anchoredPosition = _startingMousePosition;
         }
 
         private void ResizeSelectionBox()
@@ -113,8 +142,7 @@ namespace sjjasonliu.RTS.Player
                 if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, _selectableUnitsLayer) //check if the raycast hits an object
                     && hit.collider.TryGetComponent(out ISelectable selectable))
                 {
-                    selectable.Select();
-                    _selectedUnit = selectable; // set the selected unit to the newly selected one
+                    selectable.Select();                    
                 }
             }
         }
