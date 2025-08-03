@@ -13,6 +13,9 @@ namespace sjjasonliu.RTS.Player
         [SerializeField] private CameraConfig _cameraConfig;
         [SerializeField] private LayerMask _selectableUnitsLayer;
         [SerializeField] private LayerMask _floorLayer;
+        [SerializeField] private RectTransform _selectionBox; // UI element for drag selection
+
+        private Vector2 _startingMousePosition;
 
         private CinemachineFollow _cinemachineFollow;
         private float _zoomStartTime;
@@ -39,6 +42,43 @@ namespace sjjasonliu.RTS.Player
             HandleRotation();
             HandleLeftClick();
             HandleRightClick();
+            HandleDragSelect();
+        }
+
+        private void HandleDragSelect()
+        {
+            if(_selectionBox == null) { return; }
+
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                // enable the ui
+                _selectionBox.gameObject.SetActive(true);
+                // store start position
+                _startingMousePosition = Mouse.current.position.ReadValue();
+            }
+            else if (Mouse.current.leftButton.isPressed && !Mouse.current.leftButton.wasPressedThisFrame) //dragging
+            {               
+                ResizeSelectionBox();
+            }
+            else if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                // select new units
+                // deselect non-included units
+                // disable the ui
+                _selectionBox.gameObject.SetActive(false);
+            }
+        }
+
+        private void ResizeSelectionBox()
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            // resize selection box           
+            float width = mousePosition.x - _startingMousePosition.x;
+            float height = mousePosition.y - _startingMousePosition.y;
+
+            //width and height need to divi
+            _selectionBox.anchoredPosition = _startingMousePosition + new Vector2(width / 2, height / 2);
+            _selectionBox.sizeDelta = new Vector2(Mathf.Abs(width), Mathf.Abs(height));
         }
 
         private void HandleRightClick()
