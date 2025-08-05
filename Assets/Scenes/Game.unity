@@ -499,7 +499,7 @@ MonoBehaviour:
   m_Center: {x: 0.18630219, y: 2.1100411, z: -0.13633728}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 273
   m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
