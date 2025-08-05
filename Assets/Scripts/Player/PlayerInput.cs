@@ -66,7 +66,6 @@ namespace sjjasonliu.RTS.Player
             HandlePanning();
             HandleZooming();
             HandleRotation();
-            HandleLeftClick();
             HandleRightClick();
             HandleDragSelect();
         }
@@ -78,35 +77,32 @@ namespace sjjasonliu.RTS.Player
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 ResetSelectionBox();
-                _selectionBox.gameObject.SetActive(true); // enable the ui
-                _addedUnits.Clear(); // clear the added units for this frame
             }
             else if (Mouse.current.leftButton.isPressed && !Mouse.current.leftButton.wasPressedThisFrame) //dragging
             {
-                Bounds selectionBoxBounds = ResizeSelectionBox();
-                foreach (AbstractUnit unit in _aliveUnits)
-                {
-                    //get the screen position of the unit
-                    Vector2 unitPosition = _camera.WorldToScreenPoint(unit.transform.position);
-
-                    if (selectionBoxBounds.Contains(unitPosition))
-                    {
-                        _addedUnits.Add(unit); // add the unit to the added units set
-                    }
-                }
+                DraggingSelectionBox();
             }
             else if (Mouse.current.leftButton.wasReleasedThisFrame)
             {
+                ReleaseSelectionBox();
+            }
+        }
+
+        private void ReleaseSelectionBox()
+        {
+            if (!Keyboard.current.shiftKey.isPressed)
+            {
                 // deselect non-included units
                 DeselectAllUnits();
-                // select new units
-                foreach (AbstractUnit unit in _addedUnits)
-                {
-                    unit.Select(); // select the units that were added in this frame
-                }
-                // disable the ui
-                    _selectionBox.gameObject.SetActive(false);
+            }           
+            HandleLeftClick();
+            // select new units
+            foreach (AbstractUnit unit in _addedUnits)
+            {
+                unit.Select(); // select the units that were added in this frame
             }
+            // disable the ui
+            _selectionBox.gameObject.SetActive(false);
         }
 
         private void DeselectAllUnits()
@@ -118,6 +114,21 @@ namespace sjjasonliu.RTS.Player
             }
         }
 
+        private void DraggingSelectionBox()
+        {
+            Bounds selectionBoxBounds = ResizeSelectionBox();
+            foreach (AbstractUnit unit in _aliveUnits)
+            {
+                //get the screen position of the unit
+                Vector2 unitPosition = _camera.WorldToScreenPoint(unit.transform.position);
+
+                if (selectionBoxBounds.Contains(unitPosition))
+                {
+                    _addedUnits.Add(unit); // add the unit to the added units set
+                }
+            }
+        }
+
         private void ResetSelectionBox()
         {
             // store start position
@@ -126,6 +137,8 @@ namespace sjjasonliu.RTS.Player
             _selectionBox.sizeDelta = Vector2.zero;
             // set the anchored position to the starting mouse position
             _selectionBox.anchoredPosition = _startingMousePosition;
+            _selectionBox.gameObject.SetActive(true); // enable the ui
+            _addedUnits.Clear(); // clear the added units for this frame
         }
 
         private Bounds ResizeSelectionBox()
@@ -164,25 +177,16 @@ namespace sjjasonliu.RTS.Player
 
         private void HandleLeftClick()
         {
-            // if (_camera == null) { return; }
+            if (_camera == null) { return; }
 
-            // Ray cameraRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Ray cameraRay = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-            // if (Mouse.current.leftButton.wasReleasedThisFrame) //check if the left mouse button was released
-            // {
-            //     if (_selectedUnits.Count != 0) // if there is a selected unit, deselect it
-            //     {
-            //         _selectedUnit.Deselect();
-            //         _selectedUnit = null;
-            //     }
-
-            //     // Perform a raycast to check if the click hit a selectable unit, if it does, select it
-            //     if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, _selectableUnitsLayer) //check if the raycast hits an object
-            //         && hit.collider.TryGetComponent(out ISelectable selectable))
-            //     {
-            //         selectable.Select();                    
-            //     }
-            // }
+            // Perform a raycast to check if the click hit a selectable unit, if it does, select it
+            if (Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, _selectableUnitsLayer)
+                && hit.collider.TryGetComponent(out ISelectable selectable))
+            {
+                selectable.Select();                    
+            }
         }
 
         private void HandleRotation()
