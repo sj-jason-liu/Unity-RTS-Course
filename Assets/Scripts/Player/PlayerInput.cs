@@ -165,13 +165,55 @@ namespace sjjasonliu.RTS.Player
             if (Mouse.current.rightButton.wasPressedThisFrame
                 && Physics.Raycast(cameraRay, out RaycastHit hit, float.MaxValue, _floorLayer)) //check if the raycast hits the floor layer
             {
+                List<AbstractUnit> abstractUnits = new(_selectedUnits.Count);
                 foreach (ISelectable selectable in _selectedUnits)
                 {
-                    if (selectable is IMoveable moveable)
+                    if (selectable is AbstractUnit unit)
                     {
-                        moveable.MoveTo(hit.point); //move the selected unit to the hit point
+                        abstractUnits.Add(unit);
                     }
-                }                
+                }
+
+                int unitsOnLayer = 0;
+                int maxUnitsOnLayer = 1;
+                float circleRadius = 0f;
+                float radialOffset = 0f;
+
+                foreach (AbstractUnit unit in abstractUnits)
+                {
+                    // calculate the radial offset based on the number of units on this layer
+                    float angle = radialOffset * unitsOnLayer;
+
+                    Vector3 targetPosition = new(
+                        hit.point.x + circleRadius * Mathf.Cos(angle), // calculate the x position based on the angle and radius
+                        hit.point.y,
+                        hit.point.z + circleRadius * Mathf.Sin(angle) // calculate the z position based on the angle and radius
+                    );
+
+                    unit.MoveTo(targetPosition);
+                    unitsOnLayer++;
+
+                    // if the number of units on this layer exceeds the maximum, reset the counter and increase the radial offset
+                    if (unitsOnLayer >= maxUnitsOnLayer)
+                    {
+                        unitsOnLayer = 0;
+                        // increase the radius for the next layer
+                        circleRadius += unit.AgentRadius * 3.5f;
+                        // calculate the maximum number of units on this layer based on the circumference
+                        maxUnitsOnLayer = Mathf.FloorToInt(2 * Mathf.PI * circleRadius / (unit.AgentRadius * 2));
+                        radialOffset = 2 * Mathf.PI / maxUnitsOnLayer; // calculate the radial offset for the next unit
+                    } 
+                }
+
+
+
+                // foreach (ISelectable selectable in _selectedUnits)
+                // {
+                //     if (selectable is IMoveable moveable)
+                //     {
+                //         moveable.MoveTo(hit.point); //move the selected unit to the hit point
+                //     }
+                // }                
             }
         }
 
