@@ -286,7 +286,7 @@ namespace sjjasonliu.RTS.Player
 
         private void HandleZooming()
         {
-            if (ShouldSetZoomeStartTime())
+            if (ShouldSetZoomStartTime()) // if the zoom key is pressed or the scroll value is not zero, set the zoom start time
             {
                 _zoomStartTime = Time.time;
             }
@@ -320,8 +320,9 @@ namespace sjjasonliu.RTS.Player
                 );
         }
 
-        private bool ShouldSetZoomeStartTime()
+        private bool ShouldSetZoomStartTime()
         {
+
             return Keyboard.current.deleteKey.wasPressedThisFrame
                 || Keyboard.current.deleteKey.wasReleasedThisFrame;
         }
