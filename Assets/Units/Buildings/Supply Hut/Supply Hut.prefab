@@ -125,8 +125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62db01dd9b4a88140975626b43378533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <CurrentHealth>k__BackingField: 0
+  <MaxHealth>k__BackingField: 0
   _decalProjector: {fileID: 3897528990792403282}
-  <Health>k__BackingField: 0
+  _unitSO: {fileID: 11400000, guid: 359772938dab74841add175c3b0b495e, type: 2}
 --- !u!208 &499649718289845462
 NavMeshObstacle:
   m_ObjectHideFlags: 0
