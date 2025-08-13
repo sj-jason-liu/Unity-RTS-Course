@@ -27,6 +27,9 @@ namespace sjjasonliu.RTS.Player
         private float _rotateStartTime;
         private Vector3 _startingFollowOffset;
         private float _maxRotationAmount;
+        private int _currentZoomLevel = 0; // Current zoom level
+        private int _maxZoomLevels = 5; // Maximum zoom levels
+        private float[] _zoomDistances; // Array to store zoom distances for each level
         private HashSet<AbstractUnit> _aliveUnits = new(100);
         private HashSet<AbstractUnit> _addedUnits = new(24);
         private List<ISelectable> _selectedUnits = new(12);
@@ -44,6 +47,25 @@ namespace sjjasonliu.RTS.Player
             Bus<UnitSelectedEvent>.OnEvent += HandleUnitSelected; //listener for unit selection events
             Bus<UnitDeselectedEvent>.OnEvent += HandleUnitDeselected;
             Bus<UnitSpawnEvent>.OnEvent += HandleUnitSpawn;
+
+            InitializeZoomLevels();
+        }
+
+        private void InitializeZoomLevels()
+        {
+            _zoomDistances = new float[_maxZoomLevels];
+            float minDistance = _cameraConfig.MinZoomDistance;
+            float maxDistance = _startingFollowOffset.y;
+
+            // 計算各級別的縮放距離
+            for (int i = 0; i < _maxZoomLevels; i++)
+            {
+                float t = (float)i / (_maxZoomLevels - 1);
+                _zoomDistances[i] = Mathf.Lerp(minDistance, maxDistance, t);
+            }
+
+            // 設定初始縮放級別為最遠
+            _currentZoomLevel = _maxZoomLevels - 1;
         }
 
         private void OnDestroy()
@@ -286,45 +308,82 @@ namespace sjjasonliu.RTS.Player
 
         private void HandleZooming()
         {
-            if (ShouldSetZoomStartTime()) // if the zoom key is pressed or the scroll value is not zero, set the zoom start time
+            // 檢測滑鼠滾輪輸入
+            float scrollValue = Mouse.current.scroll.ReadValue().y;
+
+            if (scrollValue != 0)
             {
                 _zoomStartTime = Time.time;
+
+                // 根據滾輪方向調整縮放級別
+                if (scrollValue > 0) // 向上滾動，放大
+                {
+                    _currentZoomLevel = Mathf.Max(0, _currentZoomLevel - 1);
+                }
+                else // 向下滾動，縮小
+                {
+                    _currentZoomLevel = Mathf.Min(_maxZoomLevels - 1, _currentZoomLevel + 1);
+                }
             }
 
-            //calculate the zoom time
+            // 計算縮放時間
             float zoomTime = Mathf.Clamp01((Time.time - _zoomStartTime) * _cameraConfig.ZoomSpeed);
-            Vector3 targetFollowOffset;  //store the target follow offset based on zoom in or out
 
-            if (Keyboard.current.deleteKey.isPressed) //if zooming in, target offset is set to minimum distance
-            {
-                targetFollowOffset = new(
-                    _cinemachineFollow.FollowOffset.x,
-                    _cameraConfig.MinZoomDistance,
-                    _cinemachineFollow.FollowOffset.z
-                );
-            }
-            else  //if zooming out, target offset is set to the starting follow offset
-            {
-                targetFollowOffset = new(
-                    _cinemachineFollow.FollowOffset.x,
-                    _startingFollowOffset.y,
-                    _cinemachineFollow.FollowOffset.z
-                );
-            }
+            // 設定目標縮放距離
+            Vector3 targetFollowOffset = new(
+                _cinemachineFollow.FollowOffset.x,
+                _zoomDistances[_currentZoomLevel],
+                _cinemachineFollow.FollowOffset.z
+            );
 
-            //smoothly interpolate the follow offset towards the target offset
+            // 平滑插值到目標位置
             _cinemachineFollow.FollowOffset = Vector3.Slerp(
-                    _cinemachineFollow.FollowOffset,
-                    targetFollowOffset,
-                    zoomTime
-                );
+                _cinemachineFollow.FollowOffset,
+                targetFollowOffset,
+                zoomTime
+            );
+
+            // if (ShouldSetZoomStartTime()) // if the zoom key is pressed or the scroll value is not zero, set the zoom start time
+            // {
+            //     _zoomStartTime = Time.time;
+            // }
+
+            // //calculate the zoom time
+            // float zoomTime = Mathf.Clamp01((Time.time - _zoomStartTime) * _cameraConfig.ZoomSpeed);
+            // Vector3 targetFollowOffset;  //store the target follow offset based on zoom in or out
+
+            // if (Keyboard.current.deleteKey.isPressed) //if zooming in, target offset is set to minimum distance
+            // {
+            //     targetFollowOffset = new(
+            //         _cinemachineFollow.FollowOffset.x,
+            //         _cameraConfig.MinZoomDistance,
+            //         _cinemachineFollow.FollowOffset.z
+            //     );
+            // }
+            // else  //if zooming out, target offset is set to the starting follow offset
+            // {
+            //     targetFollowOffset = new(
+            //         _cinemachineFollow.FollowOffset.x,
+            //         _startingFollowOffset.y,
+            //         _cinemachineFollow.FollowOffset.z
+            //     );
+            // }
+
+            // //smoothly interpolate the follow offset towards the target offset
+            // _cinemachineFollow.FollowOffset = Vector3.Slerp(
+            //         _cinemachineFollow.FollowOffset,
+            //         targetFollowOffset,
+            //         zoomTime
+            //     );
         }
 
         private bool ShouldSetZoomStartTime()
         {
+            float scrollValue = Mouse.current.scroll.ReadValue().y;
+            return scrollValue != 0;
 
-            return Keyboard.current.deleteKey.wasPressedThisFrame
-                || Keyboard.current.deleteKey.wasReleasedThisFrame;
+            // return Keyboard.current.deleteKey.wasPressedThisFrame
+            //     || Keyboard.current.deleteKey.wasReleasedThisFrame;
         }
 
         private void HandlePanning()
