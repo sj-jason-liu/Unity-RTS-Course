@@ -2,14 +2,12 @@ using sjjasonliu.RTS.EventBus;
 using sjjasonliu.RTS.Events;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Rendering.Universal;
 
 namespace sjjasonliu.RTS.Units
 {
     [RequireComponent(typeof(NavMeshAgent))] //check if NavMeshAgent component exists, if not, add it
-    public abstract class AbstractUnit : MonoBehaviour, ISelectable, IMoveable
+    public abstract class AbstractUnit : AbstractCommandable, IMoveable
     {
-        [SerializeField] private DecalProjector _decalProjector;
         public float AgentRadius => _agent.radius;
         private NavMeshAgent _agent;
 
@@ -26,22 +24,6 @@ namespace sjjasonliu.RTS.Units
         public void MoveTo(Vector3 position)
         {
             _agent.SetDestination(position); //set the target position to the given position
-        }
-
-        public void Deselect()
-        {
-            if (_decalProjector != null)
-                _decalProjector.gameObject.SetActive(false); //hide the selection decal when deselected
-
-            Bus<UnitDeselectedEvent>.Raise(new UnitDeselectedEvent(this)); //raise the event that this unit is deselected
-        }
-
-        public void Select()
-        {
-            if (_decalProjector != null)
-                _decalProjector.gameObject.SetActive(true); //show the selection decal when selected
-
-            Bus<UnitSelectedEvent>.Raise(new UnitSelectedEvent(this)); //raise the event that this unit is selected
         }
     }
 }

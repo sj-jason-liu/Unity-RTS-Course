@@ -12621,6 +12621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _decalProjector: {fileID: 1628126715}
+  <Health>k__BackingField: 0
 --- !u!4 &997845288 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2636797422651241148, guid: 4d0c2e8c3bd76b64097b86828a286bc6, type: 3}
