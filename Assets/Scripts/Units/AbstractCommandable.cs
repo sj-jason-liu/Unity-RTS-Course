@@ -1,3 +1,4 @@
+using sjjasonliu.RTS.Commands;
 using sjjasonliu.RTS.EventBus;
 using sjjasonliu.RTS.Events;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace sjjasonliu.RTS.Units
     {
         [field: SerializeField] public int CurrentHealth { get; private set; }
         [field: SerializeField] public int MaxHealth { get; private set; }
+        [field: SerializeField] public ActionBase[] AvailableCommands { get; private set; }
         [SerializeField] private DecalProjector _decalProjector;
         [SerializeField] private UnitSO _unitSO;
 

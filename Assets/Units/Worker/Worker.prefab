@@ -77,7 +77,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 0.1
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -95,6 +95,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CurrentHealth>k__BackingField: 0
   <MaxHealth>k__BackingField: 0
+  <AvailableCommands>k__BackingField:
+  - {fileID: 11400000, guid: 4dc4ff121fd4ce440bf2b37c8138445c, type: 2}
   _decalProjector: {fileID: 3971785877292422086}
   _unitSO: {fileID: 11400000, guid: 6032bdfba7b0129488ffd66ed801bf78, type: 2}
 --- !u!136 &8267676084409554437
